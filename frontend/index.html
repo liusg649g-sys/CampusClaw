@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CampusClaw v2.1 · 互联网软件开发技术与实践</title>
+<style>
+:root{
+  --red:#8f0011;--red2:#65000c;--soft:#f8ecee;--bg:#f5f6f7;--line:#e5e7eb;
+  --text:#222;--muted:#6b7280;--green:#166534;--blue:#1d4ed8;
+}
+*{box-sizing:border-box}html{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{margin:0;background:var(--bg);color:var(--text)}
+header{background:linear-gradient(120deg,var(--red2),var(--red));color:#fff;box-shadow:0 4px 20px rgba(80,0,10,.18)}
+.wrap{width:min(1180px,calc(100% - 32px));margin:auto}
+.head{min-height:86px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{font-size:23px;font-weight:800}.sub{font-size:13px;opacity:.8;margin-top:4px}
+nav{display:flex;gap:10px;flex-wrap:wrap}.navbtn{border:0;background:transparent;color:#fff;padding:9px 11px;border-radius:8px;font:inherit;cursor:pointer}
+.navbtn:hover,.navbtn.active{background:rgba(255,255,255,.14)}
+main{padding:36px 0 52px;min-height:calc(100vh - 150px)}
+.hero{background:linear-gradient(125deg,#fff 55%,#f6e4e7);border:1px solid #ecdadd;border-left:6px solid var(--red);border-radius:18px;padding:34px 38px;margin-bottom:20px}
+.hero h1{font-size:34px;line-height:1.25;margin:10px 0}.hero p{color:#5f5355;line-height:1.7}
+.pill{display:inline-block;padding:6px 11px;border-radius:999px;background:var(--soft);color:var(--red);font-size:12px;font-weight:800}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px;box-shadow:0 8px 30px rgba(0,0,0,.04)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.field{margin-bottom:18px}label{display:block;font-weight:750;margin-bottom:8px}
+input,textarea,select{width:100%;border:1px solid #d4d4d8;border-radius:10px;padding:11px 13px;font:inherit;background:#fff;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(143,0,17,.09)}
+textarea{min-height:390px;resize:vertical;line-height:1.65;font-family:Consolas,"Microsoft YaHei",monospace}
+.row{display:flex;justify-content:space-between;align-items:center;gap:16px}.muted{color:var(--muted)}.small{font-size:13px}
+.primary,.secondary,.danger,.ghost{border-radius:10px;padding:10px 17px;font-weight:750;border:1px solid transparent;font:inherit;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.primary{background:var(--red);color:#fff}.primary:hover{background:var(--red2)}
+.secondary{background:#fff;color:var(--red);border-color:#d9aeb4}.secondary:hover{background:#fff7f8}
+.danger{background:#fff;color:#b91c1c;border-color:#fecaca}.danger:hover{background:#fff1f2}
+.ghost{background:#f4f4f5;color:#444;border-color:#e4e4e7}.wide{width:100%}
+.hidden{display:none!important}.login{width:min(470px,100%);margin:34px auto}.alert{padding:12px 15px;border-radius:10px;margin-bottom:16px;font-weight:650}
+.ok{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0}.err{background:#fff1f2;color:#9f1239;border:1px solid #fecdd3}
+.adminhead{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:20px}.actions{display:flex;gap:10px;flex-wrap:wrap}
+.identity{display:flex;align-items:center;gap:12px;padding:11px 14px;background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:20px}
+.avatar{width:42px;height:42px;border-radius:50%;background:var(--soft);color:var(--red);display:flex;align-items:center;justify-content:center;font-weight:900}
+.identity strong{display:block}.identity span{font-size:12px;color:var(--muted)}
+.dashboard{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-bottom:22px}
+.module-card{padding:24px;border-radius:16px;background:#fff;border:1px solid var(--line);box-shadow:0 8px 30px rgba(0,0,0,.04)}
+.module-card h2{margin:9px 0 8px}.module-card p{color:var(--muted);line-height:1.7}.module-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.stat{padding:18px;border-radius:14px;background:#fff;border:1px solid var(--line)}.stat .n{font-size:28px;font-weight:850;color:var(--red)}.stat .t{font-size:13px;color:var(--muted);margin-top:4px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:13px 15px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#fbf7f8;font-size:13px;color:#54373b}.tablewrap{overflow:auto}.link{color:var(--red);font-weight:700;text-decoration:none;cursor:pointer}.link:hover{text-decoration:underline}
+.empty{text-align:center;padding:42px;color:var(--muted)}.preview{display:grid;grid-template-columns:1.15fr .85fr;gap:20px}
+.md{line-height:1.8;overflow-wrap:anywhere}.md pre,.src{background:#f7f7f8;border:1px solid #e7e7e9;border-radius:10px;padding:14px;overflow:auto}
+.md code{background:#f7eeee;padding:.15em .35em;border-radius:4px}.src{white-space:pre-wrap;word-break:break-word;min-height:330px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}.toolbar .grow{flex:1;min-width:220px}
+.class-chip{display:inline-flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid var(--line);padding:8px 10px;border-radius:999px;margin:4px 6px 4px 0}
+.class-chip.active{border-color:#d9aeb4;background:#fff7f8;color:var(--red)}
+.material-title{font-weight:750}.filemeta{font-size:12px;color:var(--muted);margin-top:4px}.badge{display:inline-block;padding:3px 7px;border-radius:999px;font-size:11px;font-weight:800;background:#eef2ff;color:#4338ca}
+.section-title{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px}.section-title h2{margin:0}
+
+.teacher-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.teacher-nav button{border:1px solid var(--line);background:#fff;color:#444;padding:9px 13px;border-radius:10px;font:inherit;cursor:pointer}
+.teacher-nav button:hover,.teacher-nav button.active{border-color:#d9aeb4;background:#fff7f8;color:var(--red);font-weight:750}
+.filter-grid{display:grid;grid-template-columns:1.1fr 1fr 1fr auto;gap:10px;align-items:end}
+.dup{display:inline-block;padding:3px 7px;border-radius:999px;background:#fff1f2;color:#be123c;font-size:11px;font-weight:800}
+.detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;font-size:13px}
+.detail-grid div{padding:10px 12px;background:#fafafa;border:1px solid var(--line);border-radius:10px}
+.material-actions{display:flex;gap:8px;flex-wrap:wrap}
+.knowledge-search{display:grid;grid-template-columns:minmax(180px,280px) 1fr auto;gap:10px;align-items:end}
+.knowledge-results{display:grid;gap:12px;margin-top:18px}
+.knowledge-result{padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:#fcfcfd}
+.knowledge-result p{margin:0;line-height:1.7;white-space:pre-wrap}
+.knowledge-source{margin-top:10px;color:var(--muted);font-size:13px}
+footer{background:#fff;border-top:1px solid var(--line);padding:24px 0;color:#888;font-size:13px}
+
+@media(max-width:860px){.head,.adminhead{align-items:flex-start;flex-direction:column;padding:18px 0}.grid2,.grid3,.dashboard,.preview,.knowledge-search{grid-template-columns:1fr}.hero{padding:28px 24px}.hero h1{font-size:28px}.row{align-items:stretch;flex-direction:column}.row button{width:100%}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap head">
+    <div><div class="brand">课程作业与材料管理系统</div><div class="sub">互联网软件开发技术与实践</div></div>
+    <nav id="topNav">
+      <button class="navbtn" onclick="showStudent()">学生提交</button>
+      <button class="navbtn" onclick="showLogin()">教师登录</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+<div id="msg"></div>
+
+<section id="studentView">
+  <div class="hero">
+    <span class="pill">学生提交入口</span>
+    <h1>互联网软件开发技术与实践<br>课程大作业提交</h1>
+    <p>无需注册或登录。填写学号、姓名和 Markdown 格式的作业内容即可提交。</p>
+  </div>
+  <div class="card">
+    <div class="grid3">
+      <div class="field"><label>班级</label><select id="studentClass"></select></div>
+      <div class="field"><label>学号</label><input id="sid" placeholder="请输入学号"></div>
+      <div class="field"><label>姓名</label><input id="sname" placeholder="请输入姓名"></div>
+    </div>
+    <div class="field">
+      <label>作业内容 <span class="muted small">（支持 Markdown）</span></label>
+      <textarea id="content" placeholder="# 项目名称
+
+## 一、项目简介
+在这里填写作业内容。
+
+## 二、核心功能
+- 功能 1
+- 功能 2
+
+## 三、关键代码
+```python
+print('Hello, World!')
+```"></textarea>
+    </div>
+    <div class="row"><span class="muted small">当前演示版数据保存在本浏览器中。</span><button class="primary" onclick="submitWork()">提交作业</button></div>
+  </div>
+</section>
+
+<section id="loginView" class="hidden">
+  <div class="card login">
+    <span class="pill">教师管理端</span>
+    <h1>教师账号登录</h1>
+    <div class="field"><label>教师账号</label><input id="teacherUser" value="teacher" autocomplete="username"></div>
+    <div class="field"><label>密码</label><input id="teacherPwd" type="password" autocomplete="current-password"></div>
+    <button class="primary wide" onclick="teacherLogin()">登录</button>
+  </div>
+</section>
+
+<section id="teacherHomeView" class="hidden">
+
+  <div class="teacher-nav">
+    <button onclick="showTeacherHome()">教师首页</button>
+    <button onclick="showAssignments()">学生作业</button>
+    <button onclick="showMaterials()">课程材料</button>
+    <button onclick="showClasses()">班级管理</button>
+  </div>
+  <div class="identity">
+    <div class="avatar">师</div>
+    <div><strong id="identityName">任课教师</strong><span id="identityMeta">teacher · 教师</span></div>
+  </div>
+
+  <div class="adminhead">
+    <div><span class="pill">教师首页</span><h1>课程管理中心</h1><p class="muted">统一管理学生作业、班级与课程材料。</p></div>
+    <div class="actions"><button class="secondary" onclick="showPassword()">修改密码</button><button class="ghost" onclick="logout()">退出登录</button></div>
+  </div>
+
+  <div class="grid3" style="margin-bottom:20px">
+    <div class="stat"><div class="n" id="homeSubmissionCount">0</div><div class="t">学生作业提交</div></div>
+    <div class="stat"><div class="n" id="homeTodaySubmissionCount">0</div><div class="t">今日提交</div></div>
+    <div class="stat"><div class="n" id="homeClassCount">0</div><div class="t">已创建班级</div></div>
+    <div class="stat"><div class="n" id="homeMaterialCount">0</div><div class="t">课程材料</div></div>
+    <div class="stat"><div class="n" id="homeTodayMaterialCount">0</div><div class="t">今日上传材料</div></div>
+  </div>
+
+  <div class="dashboard">
+    <div class="module-card">
+      <span class="pill">作业管理</span>
+      <h2>学生作业管理</h2>
+      <p>查看学生提交记录、预览 Markdown 作业内容，并导出学生作业数据。</p>
+      <div class="module-actions"><button class="primary" onclick="showAssignments()">进入作业管理</button><button class="secondary" onclick="exportExcel()">下载 Excel</button></div>
+    </div>
+    <div class="module-card">
+      <span class="pill">课程材料</span>
+      <h2>班级与材料管理</h2>
+      <p>创建班级、上传本班材料、在线预览 Markdown 材料、下载原文件并搜索材料。</p>
+      <div class="module-actions"><button class="primary" onclick="showMaterials()">进入材料管理</button><button class="secondary" onclick="showClasses()">班级管理</button></div>
+    </div>
+  </div>
+</section>
+
+<section id="assignmentView" class="hidden">
+
+  <div class="teacher-nav">
+    <button onclick="showTeacherHome()">教师首页</button>
+    <button onclick="showAssignments()">学生作业</button>
+    <button onclick="showMaterials()">课程材料</button>
+    <button onclick="showClasses()">班级管理</button>
+  </div>
+  <div class="adminhead">
+    <div><span class="pill">作业管理</span><h1>学生作业</h1><p class="muted">当前共 <span id="count">0</span> 份提交。</p></div>
+    <div class="actions"><button class="secondary" onclick="showTeacherHome()">返回教师首页</button><button class="primary" onclick="exportExcel()">下载 Excel</button></div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="filter-grid">
+      <div class="field" style="margin:0"><label>班级</label><select id="assignmentClassFilter" onchange="renderSubmissionTable()"></select></div>
+      <div class="field" style="margin:0"><label>学号</label><input id="assignmentSidFilter" placeholder="搜索学号" oninput="renderSubmissionTable()"></div>
+      <div class="field" style="margin:0"><label>姓名</label><input id="assignmentNameFilter" placeholder="搜索姓名" oninput="renderSubmissionTable()"></div>
+      <button class="secondary" onclick="clearAssignmentFilters()">清除筛选</button>
+    </div>
+  </div>
+  <div class="card"><div id="tableArea"></div></div>
+</section>
+
+<section id="submissionPreviewView" class="hidden">
+  <div class="adminhead">
+    <div><span class="pill">Markdown 作业预览</span><h1 id="previewTitle"></h1><p id="previewMeta" class="muted"></p></div>
+    <button class="secondary" onclick="showAssignments()">返回作业管理</button>
+  </div>
+  <div class="preview">
+    <div class="card"><h2>渲染效果</h2><div id="rendered" class="md"></div></div>
+    <div class="card"><h2>Markdown 原文</h2><pre id="raw" class="src"></pre></div>
+  </div>
+</section>
+
+<section id="classView" class="hidden">
+
+  <div class="teacher-nav">
+    <button onclick="showTeacherHome()">教师首页</button>
+    <button onclick="showAssignments()">学生作业</button>
+    <button onclick="showMaterials()">课程材料</button>
+    <button onclick="showClasses()">班级管理</button>
+  </div>
+  <div class="adminhead">
+    <div><span class="pill">班级管理</span><h1>班级管理</h1><p class="muted">课程材料按班级归档。</p></div>
+    <button class="secondary" onclick="showTeacherHome()">返回教师首页</button>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h2>新增班级</h2>
+      <div class="field"><label>班级名称</label><input id="newClassName" placeholder="例如：2026级软件工程1班"></div>
+      <button class="primary" onclick="addClass()">新增班级</button>
+    </div>
+    <div class="card">
+      <h2>已有班级</h2>
+      <div id="classList"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <div class="section-title">
+      <div><h2>班级知识库检索</h2><p class="muted small">仅搜索所选班级已提取的课程材料，并显示原始来源。</p></div>
+    </div>
+    <div class="knowledge-search">
+      <div class="field" style="margin:0"><label for="knowledgeClass">班级</label><select id="knowledgeClass"></select></div>
+      <div class="field" style="margin:0"><label for="knowledgeQuery">问题或关键词</label><input id="knowledgeQuery" placeholder="例如：OpenSpec 的 design 有什么作用？" onkeydown="if(event.key==='Enter')searchKnowledge()"></div>
+      <button class="primary" id="knowledgeSearchButton" onclick="searchKnowledge()">查询知识库</button>
+    </div>
+    <div id="knowledgeResults" class="knowledge-results" aria-live="polite"><div class="empty">输入问题后开始检索。</div></div>
+  </div>
+</section>
+
+<section id="materialView" class="hidden">
+
+  <div class="teacher-nav">
+    <button onclick="showTeacherHome()">教师首页</button>
+    <button onclick="showAssignments()">学生作业</button>
+    <button onclick="showMaterials()">课程材料</button>
+    <button onclick="showClasses()">班级管理</button>
+  </div>
+  <div class="adminhead">
+    <div><span class="pill">课程材料</span><h1>本班材料管理</h1><p class="muted">支持上传、搜索、Markdown 在线预览和原文件下载。</p></div>
+    <div class="actions"><button class="secondary" onclick="showClasses()">班级管理</button><button class="secondary" onclick="showTeacherHome()">返回教师首页</button></div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <div class="section-title"><h2>班级与搜索</h2></div>
+    <div class="toolbar">
+      <select id="materialClassFilter" onchange="refreshMaterialTable()" style="max-width:320px"></select>
+      <input class="grow" id="materialSearch" placeholder="搜索材料标题或文件名" oninput="refreshMaterialTable()">
+      <button class="secondary" onclick="refreshMaterialTable()">获取班级材料</button>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-bottom:18px">
+    <div class="card">
+      <h2>教师上传材料</h2>
+      <div class="field"><label>所属班级</label><select id="uploadClass"></select></div>
+      <div class="field"><label>材料标题</label><input id="materialTitle" placeholder="例如：第3周实验说明"></div>
+      <div class="field"><label>选择文件</label><input id="materialFile" type="file"></div>
+      <p class="muted small">Markdown 文件（.md / .markdown）支持在线预览，所有材料均支持原文件下载。上传后还可重命名、替换文件或删除。</p>
+      <button class="primary" onclick="uploadMaterial()">上传材料</button>
+    </div>
+    <div class="card">
+      <h2>材料统计</h2>
+      <div class="grid2">
+        <div class="stat"><div class="n" id="materialCount">0</div><div class="t">当前筛选材料</div></div>
+        <div class="stat"><div class="n" id="markdownCount">0</div><div class="t">Markdown 材料</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card"><div id="materialTableArea"></div></div>
+</section>
+
+
+<section id="materialDetailView" class="hidden">
+  <div class="teacher-nav">
+    <button onclick="showTeacherHome()">教师首页</button>
+    <button onclick="showAssignments()">学生作业</button>
+    <button onclick="showMaterials()">课程材料</button>
+    <button onclick="showClasses()">班级管理</button>
+  </div>
+  <div class="adminhead">
+    <div><span class="pill">材料详情</span><h1 id="detailMaterialTitle"></h1><p class="muted" id="detailMaterialMeta"></p></div>
+    <button class="secondary" onclick="showMaterials()">返回材料管理</button>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h2>材料信息</h2>
+      <div id="materialDetailInfo" class="detail-grid"></div>
+    </div>
+    <div class="card">
+      <h2>材料操作</h2>
+      <div class="field"><label>重命名材料标题</label><input id="renameMaterialInput"></div>
+      <button class="secondary" onclick="renameCurrentMaterial()">保存标题</button>
+      <hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+      <div class="field"><label>替换原文件</label><input id="replaceMaterialFile" type="file"></div>
+      <button class="secondary" onclick="replaceCurrentMaterial()">替换文件</button>
+      <hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+      <div class="material-actions">
+        <button class="primary" onclick="downloadCurrentMaterial()">下载原文件</button>
+        <button class="danger" onclick="deleteCurrentMaterial()">删除材料</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="materialPreviewView" class="hidden">
+  <div class="adminhead">
+    <div><span class="pill">Markdown 材料预览</span><h1 id="materialPreviewTitle"></h1><p id="materialPreviewMeta" class="muted"></p></div>
+    <div class="actions"><button class="secondary" onclick="showMaterials()">返回材料管理</button><button class="primary" id="materialDownloadBtn">下载原文件</button></div>
+  </div>
+  <div class="preview">
+    <div class="card"><h2>渲染效果</h2><div id="materialRendered" class="md"></div></div>
+    <div class="card"><h2>Markdown 原文</h2><pre id="materialRaw" class="src"></pre></div>
+  </div>
+</section>
+
+<section id="passwordView" class="hidden">
+
+  <div class="teacher-nav">
+    <button onclick="showTeacherHome()">教师首页</button>
+    <button onclick="showAssignments()">学生作业</button>
+    <button onclick="showMaterials()">课程材料</button>
+    <button onclick="showClasses()">班级管理</button>
+  </div>
+  <div class="card login">
+    <span class="pill">教师账号</span><h1>修改登录密码</h1>
+    <div class="field"><label>当前密码</label><input id="oldPwd" type="password"></div>
+    <div class="field"><label>新密码</label><input id="newPwd" type="password"></div>
+    <div class="field"><label>确认新密码</label><input id="newPwd2" type="password"></div>
+    <button class="primary wide" onclick="changePassword()">保存新密码</button>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap">互联网软件开发技术与实践 · 课程作业与材料管理系统 · Session API 版 v2.1</div></footer>
+
+<script>
+const SUB_KEY='courseSubmissionsV2';
+const CLASS_KEY='courseClassesV2';
+const SESSION_KEY='teacherSessionV2';
+
+function classes(){try{const v=JSON.parse(localStorage.getItem(CLASS_KEY)||'[]');return v.length?v:[{id:'default',name:'互联网软件开发技术与实践'}]}catch(e){return[{id:'default',name:'互联网软件开发技术与实践'}]}}
+function saveClasses(v){localStorage.setItem(CLASS_KEY,JSON.stringify(v))}
+function submissions(){try{return JSON.parse(localStorage.getItem(SUB_KEY)||localStorage.getItem('courseSubmissionsV1')||'[]')}catch(e){return[]}}
+function saveSubs(v){localStorage.setItem(SUB_KEY,JSON.stringify(v))}
+function teacherLoggedIn(){return sessionStorage.getItem(SESSION_KEY)==='1'}
+function setTeacherSession(v){v?sessionStorage.setItem(SESSION_KEY,'1'):sessionStorage.removeItem(SESSION_KEY)}
+
+function views(){return ['studentView','loginView','teacherHomeView','assignmentView','submissionPreviewView','classView','materialView','materialDetailView','materialPreviewView','passwordView']}
+function hideAll(){views().forEach(id=>document.getElementById(id).classList.add('hidden'))}
+function clearMsg(){document.getElementById('msg').innerHTML=''}
+function notice(t,ok=true){document.getElementById('msg').innerHTML=`<div class="alert ${ok?'ok':'err'}">${escapeHtml(t)}</div>`;window.scrollTo({top:0,behavior:'smooth'})}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function requireTeacher(){if(!teacherLoggedIn()){showLogin();notice('请先登录教师账号。',false);return false}return true}
+function updateNav(){
+ const n=document.getElementById('topNav');
+ if(teacherLoggedIn()) n.innerHTML='<button class="navbtn" onclick="showStudent()">学生提交</button><button class="navbtn" onclick="showTeacherHome()">教师首页</button><button class="navbtn" onclick="logout()">退出</button>';
+ else n.innerHTML='<button class="navbtn" onclick="showStudent()">学生提交</button><button class="navbtn" onclick="showLogin()">教师登录</button>';
+}
+function showStudent(){hideAll();document.getElementById('studentView').classList.remove('hidden');populateStudentClass();clearMsg();updateNav()}
+function populateStudentClass(){
+ const sel=document.getElementById('studentClass'); if(!sel)return;
+ const arr=classes(); sel.innerHTML=arr.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+}
+function showLogin(){hideAll();document.getElementById('loginView').classList.remove('hidden');clearMsg();updateNav()}
+function showTeacherHome(){
+ if(!requireTeacher())return;hideAll();document.getElementById('teacherHomeView').classList.remove('hidden');clearMsg();updateNav();
+ document.getElementById('identityName').textContent='任课教师';document.getElementById('identityMeta').textContent='teacher · 教师';
+ const subs=submissions();
+ document.getElementById('homeSubmissionCount').textContent=subs.length;
+ document.getElementById('homeTodaySubmissionCount').textContent=subs.filter(x=>isToday(x.time)).length;
+ document.getElementById('homeClassCount').textContent=classes().length;
+ allMaterials().then(ms=>{
+   document.getElementById('homeMaterialCount').textContent=ms.length;
+   document.getElementById('homeTodayMaterialCount').textContent=ms.filter(x=>isToday(x.time)).length;
+ });
+}
+async function teacherLogin(){
+ const u=document.getElementById('teacherUser').value.trim();
+ const p=document.getElementById('teacherPwd').value;
+ try{
+   const resp=await fetch('/login',{
+     method:'POST',
+     headers:{'Content-Type':'application/json'},
+     credentials:'same-origin',
+     body:JSON.stringify({username:u,password:p})
+   });
+   const data=await resp.json();
+   if(resp.ok && data.success){
+     setTeacherSession(true);
+     document.getElementById('teacherPwd').value='';
+     showTeacherHome();
+   }else{
+     notice(data.message||'教师账号或密码错误。',false);
+   }
+ }catch(e){
+   notice('无法连接服务器，请确认 Python 后端与 Nginx 都已经启动。',false);
+ }
+}
+async function logout(){
+ try{await fetch('/logout',{method:'POST',credentials:'same-origin'});}catch(e){}
+ setTeacherSession(false);
+ showLogin();
+ notice('已退出教师账号。');
+}
+
+
+function submitWork(){
+ const classId=document.getElementById('studentClass').value;
+ const sid=document.getElementById('sid').value.trim(),name=document.getElementById('sname').value.trim(),content=document.getElementById('content').value.trim();
+ if(!classId||!sid||!name||!content){notice('班级、学号、姓名和作业内容均不能为空。',false);return}
+ const arr=submissions();
+ const same=arr.filter(x=>(x.classId||'default')===classId&&x.sid===sid);
+ if(same.length){
+   const replace=confirm('检测到该班级下此学号已有提交。点击“确定”将用本次提交替换旧提交；点击“取消”则保留为重复提交。');
+   if(replace){
+     for(let i=arr.length-1;i>=0;i--) if((arr[i].classId||'default')===classId&&arr[i].sid===sid) arr.splice(i,1);
+   }
+ }
+ arr.push({id:Date.now(),classId,sid,name,content,time:new Date().toLocaleString('zh-CN')});saveSubs(arr);
+ document.getElementById('sid').value='';document.getElementById('sname').value='';document.getElementById('content').value='';notice('作业提交成功。');
+}
+function showAssignments(){if(!requireTeacher())return;hideAll();document.getElementById('assignmentView').classList.remove('hidden');populateAssignmentClassFilter();renderSubmissionTable();clearMsg()}
+function populateAssignmentClassFilter(){
+ const sel=document.getElementById('assignmentClassFilter'); if(!sel)return;
+ const old=sel.value; sel.innerHTML='<option value="">全部班级</option>'+classes().map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join(''); sel.value=old;
+}
+function clearAssignmentFilters(){
+ document.getElementById('assignmentClassFilter').value='';
+ document.getElementById('assignmentSidFilter').value='';
+ document.getElementById('assignmentNameFilter').value='';
+ renderSubmissionTable();
+}
+function renderSubmissionTable(){
+ let arr=submissions().map(x=>({...x,classId:x.classId||'default'}));
+ const cls=document.getElementById('assignmentClassFilter')?.value||'';
+ const sid=(document.getElementById('assignmentSidFilter')?.value||'').trim().toLowerCase();
+ const name=(document.getElementById('assignmentNameFilter')?.value||'').trim().toLowerCase();
+ if(cls)arr=arr.filter(x=>x.classId===cls);
+ if(sid)arr=arr.filter(x=>String(x.sid).toLowerCase().includes(sid));
+ if(name)arr=arr.filter(x=>String(x.name).toLowerCase().includes(name));
+ document.getElementById('count').textContent=arr.length;
+ const all=submissions().map(x=>({...x,classId:x.classId||'default'}));
+ const keyCount={}; all.forEach(x=>{const k=x.classId+'|'+x.sid;keyCount[k]=(keyCount[k]||0)+1});
+ const classMap=Object.fromEntries(classes().map(c=>[c.id,c.name]));
+ if(!arr.length){document.getElementById('tableArea').innerHTML='<div class="empty">没有找到符合条件的学生作业。</div>';return}
+ let h='<div class="tablewrap"><table><thead><tr><th>序号</th><th>班级</th><th>学号</th><th>姓名</th><th>提交时间</th><th>状态</th><th>操作</th></tr></thead><tbody>';
+ arr.slice().reverse().forEach((x,i)=>{
+   const dup=keyCount[x.classId+'|'+x.sid]>1;
+   h+=`<tr><td>${arr.length-i}</td><td>${escapeHtml(classMap[x.classId]||'未知班级')}</td><td>${escapeHtml(x.sid)}</td><td>${escapeHtml(x.name)}</td><td>${escapeHtml(x.time)}</td><td>${dup?'<span class="dup">重复提交</span>':'正常'}</td><td><span class="link" onclick="previewSubmission(${x.id})">预览</span> · <span class="link" onclick="deleteSubmission(${x.id})">删除</span>${dup?` · <span class="link" onclick="keepLatestSubmission('${x.classId}','${String(x.sid).replace(/'/g,"\'")}')">保留最新</span>`:''}</td></tr>`;
+ });
+ h+='</tbody></table></div>';document.getElementById('tableArea').innerHTML=h;
+}
+function deleteSubmission(id){
+ const arr=submissions(),x=arr.find(v=>v.id===id);if(!x)return;
+ if(!confirm('确认删除 '+x.name+' 的这次作业提交？'))return;
+ saveSubs(arr.filter(v=>v.id!==id));renderSubmissionTable();notice('作业已删除。');
+}
+function keepLatestSubmission(classId,sid){
+ const arr=submissions().map(x=>({...x,classId:x.classId||'default'}));
+ const group=arr.filter(x=>x.classId===classId&&x.sid===sid);
+ if(group.length<=1)return;
+ const latest=group.reduce((a,b)=>a.id>b.id?a:b);
+ const next=arr.filter(x=>!(x.classId===classId&&x.sid===sid&&x.id!==latest.id));
+ saveSubs(next);renderSubmissionTable();notice('已保留该学生最新一次提交。');
+}
+function previewSubmission(id){
+ const x=submissions().find(v=>v.id===id);if(!x)return;
+ hideAll();document.getElementById('submissionPreviewView').classList.remove('hidden');
+ document.getElementById('previewTitle').textContent=x.name+' 的作业';document.getElementById('previewMeta').textContent='学号：'+x.sid+' · 提交时间：'+x.time;
+ document.getElementById('raw').textContent=x.content;document.getElementById('rendered').innerHTML=md(x.content);
+}
+function exportExcel(){
+ const arr=submissions(),rows=[['序号','学号','姓名','Markdown作业内容','提交时间'],...arr.map((x,i)=>[i+1,x.sid,x.name,x.content,x.time])];
+ const csv='\ufeff'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n');
+ const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});downloadBlob(blob,'学生作业提交.csv');
+}
+function csvCell(v){return '"'+String(v??'').replace(/"/g,'""')+'"'}
+
+function showPassword(){if(!requireTeacher())return;hideAll();document.getElementById('passwordView').classList.remove('hidden');clearMsg()}
+async function changePassword(){
+ const o=document.getElementById('oldPwd').value;
+ const n=document.getElementById('newPwd').value;
+ const n2=document.getElementById('newPwd2').value;
+ if(n.length<6){notice('新密码至少 6 位。',false);return}
+ if(n!==n2){notice('两次输入的新密码不一致。',false);return}
+ try{
+   const resp=await fetch('/change-password',{
+     method:'POST',
+     headers:{'Content-Type':'application/json'},
+     credentials:'same-origin',
+     body:JSON.stringify({oldPassword:o,newPassword:n})
+   });
+   const data=await resp.json();
+   if(resp.ok && data.success){
+     document.getElementById('oldPwd').value='';
+     document.getElementById('newPwd').value='';
+     document.getElementById('newPwd2').value='';
+     showTeacherHome();
+     notice('教师密码修改成功。');
+   }else{
+     notice(data.message||'密码修改失败。',false);
+   }
+ }catch(e){
+   notice('无法连接服务器，请确认 Python 后端与 Nginx 都已经启动。',false);
+ }
+}
+
+function showClasses(){if(!requireTeacher())return;hideAll();document.getElementById('classView').classList.remove('hidden');renderClasses();clearMsg()}
+function addClass(){
+ const name=document.getElementById('newClassName').value.trim();if(!name){notice('请输入班级名称。',false);return}
+ const arr=classes();arr.push({id:'c'+Date.now(),name});saveClasses(arr);document.getElementById('newClassName').value='';renderClasses();notice('班级已新增。')
+}
+function renderClasses(){
+ const arr=classes();document.getElementById('classList').innerHTML=arr.map(c=>`<div class="class-chip"><span>${escapeHtml(c.name)}</span><span class="link" onclick="renameClass('${c.id}')">重命名</span>${arr.length>1?`<span class="link" onclick="deleteClass('${c.id}')">删除</span>`:''}</div>`).join('');
+ const select=document.getElementById('knowledgeClass');
+ if(select){const selected=select.value;select.innerHTML=arr.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');if(arr.some(c=>c.id===selected))select.value=selected}
+}
+
+async function searchKnowledge(){
+ const classId=document.getElementById('knowledgeClass').value;
+ const query=document.getElementById('knowledgeQuery').value.trim();
+ const area=document.getElementById('knowledgeResults');
+ const button=document.getElementById('knowledgeSearchButton');
+ if(!classId||!query){area.innerHTML='<div class="empty">请选择班级并输入要查询的问题。</div>';return}
+ area.innerHTML='<div class="empty">正在检索班级材料…</div>';button.disabled=true;
+ try{
+   const params=new URLSearchParams({classId,q:query});
+   const data=await materialApi('/knowledge/search?'+params.toString());
+   const results=data.results||[];
+   if(!results.length){area.innerHTML=`<div class="empty">${escapeHtml(data.message||'当前班级知识库中没有相关内容。')}</div>`;return}
+   area.innerHTML=results.map(item=>{
+     const location=item.page!=null?'第 '+escapeHtml(item.page)+' 页':'片段 '+(Number(item.chunkIndex)+1);
+     return `<article class="knowledge-result"><p>${escapeHtml(item.text||'')}</p><div class="knowledge-source">来源：${escapeHtml(item.sourceFile||'未知材料')} · ${location}</div></article>`;
+   }).join('');
+ }catch(e){
+   if(e.message!=='unauthorized')area.innerHTML=`<div class="alert err">${escapeHtml(e.message||'知识库检索失败，请稍后重试。')}</div>`;
+ }finally{button.disabled=false}
+}
+function renameClass(id){
+ const arr=classes(),c=arr.find(x=>x.id===id);if(!c)return;
+ const n=prompt('请输入新的班级名称：',c.name);if(!n||!n.trim())return;c.name=n.trim();saveClasses(arr);renderClasses();populateStudentClass();notice('班级名称已更新。');
+}
+async function deleteClass(id){
+ const arr=classes(),c=arr.find(x=>x.id===id);if(!c)return;if(!confirm('删除班级“'+c.name+'”？该班级下材料也会一并删除。'))return;
+ const remain=arr.filter(x=>x.id!==id);saveClasses(remain);await deleteMaterialsByClass(id);
+ const fallback=remain[0]?.id||'default';saveSubs(submissions().map(s=>((s.classId||'default')===id?{...s,classId:fallback}:s)));
+ renderClasses();notice('班级已删除；该班级原有学生作业已归入剩余班级。')
+}
+
+
+function fileToBase64(file){
+ return new Promise((resolve,reject)=>{
+   const reader=new FileReader();
+   reader.onload=()=>resolve(String(reader.result).split(',')[1]||'');
+   reader.onerror=()=>reject(reader.error);
+   reader.readAsDataURL(file);
+ });
+}
+
+async function materialApi(url,options={}){
+ console.log('[CampusClaw v2.1] materialApi ->',url,options.method||'GET');
+ const opts={credentials:'same-origin',cache:'no-store',...options};
+ const resp=await fetch(url,opts);
+ let data={};
+ const ct=resp.headers.get('content-type')||'';
+ if(ct.includes('application/json')){
+   try{data=await resp.json()}catch(e){data={}}
+ }
+ if(resp.status===401){
+   setTeacherSession(false);
+   showLogin();
+   notice('登录状态已失效，请重新登录教师账号。',false);
+   throw new Error('unauthorized');
+ }
+ if(!resp.ok){
+   throw new Error(data.message||('请求失败：HTTP '+resp.status));
+ }
+ return data;
+}
+
+async function allMaterials(){
+ const data=await materialApi('/materials');
+ return data.materials||[];
+}
+
+async function getMaterial(id){
+ const data=await materialApi('/materials/'+encodeURIComponent(id));
+ return data.material||null;
+}
+
+async function deleteMaterial(id){
+ await materialApi('/materials/'+encodeURIComponent(id),{method:'DELETE'});
+}
+
+async function deleteMaterialsByClass(classId){
+ await materialApi('/materials?classId='+encodeURIComponent(classId),{method:'DELETE'});
+}
+
+async function countMaterials(){
+ return (await allMaterials()).length;
+}
+
+async function showMaterials(){
+ if(!requireTeacher())return;
+ hideAll();
+ document.getElementById('materialView').classList.remove('hidden');
+ clearMsg();
+ populateClassSelects();
+ try{await refreshMaterialTable()}catch(e){
+   if(e.message!=='unauthorized')notice(e.message||'读取课程材料失败。',false);
+ }
+}
+
+function populateClassSelects(){
+ const arr=classes(),filter=document.getElementById('materialClassFilter'),upload=document.getElementById('uploadClass');
+ filter.innerHTML='<option value="">全部班级</option>'+arr.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+ upload.innerHTML=arr.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+}
+
+async function uploadMaterial(){
+ const cls=document.getElementById('uploadClass').value;
+ const title=document.getElementById('materialTitle').value.trim();
+ const file=document.getElementById('materialFile').files[0];
+ if(!cls||!title||!file){notice('请完整选择班级、填写标题并选择文件。',false);return}
+ try{
+   const dataBase64=await fileToBase64(file);
+   await materialApi('/materials',{
+     method:'POST',
+     headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({
+       classId:cls,
+       title,
+       fileName:file.name,
+       type:file.type||'',
+       dataBase64
+     })
+   });
+   document.getElementById('materialTitle').value='';
+   document.getElementById('materialFile').value='';
+   await refreshMaterialTable();
+   notice('材料上传成功。');
+ }catch(e){
+   if(e.message!=='unauthorized')notice(e.message||'材料上传失败。',false);
+ }
+}
+
+async function refreshMaterialTable(){
+ const cls=document.getElementById('materialClassFilter').value;
+ const q=document.getElementById('materialSearch').value.trim();
+ const cm=classes();
+ const params=new URLSearchParams();
+ if(cls)params.set('classId',cls);
+ if(q)params.set('q',q);
+ const data=await materialApi('/materials'+(params.toString()?'?'+params.toString():''));
+ const arr=data.materials||[];
+ document.getElementById('materialCount').textContent=arr.length;
+ document.getElementById('markdownCount').textContent=arr.filter(x=>x.isMd).length;
+ if(!arr.length){
+   document.getElementById('materialTableArea').innerHTML='<div class="empty">没有找到课程材料。</div>';
+   return;
+ }
+ const classMap=Object.fromEntries(cm.map(c=>[c.id,c.name]));
+ let h='<div class="tablewrap"><table><thead><tr><th>材料</th><th>班级</th><th>文件信息</th><th>上传时间</th><th>操作</th></tr></thead><tbody>';
+ arr.forEach(m=>{
+   h+=`<tr><td><div class="material-title">${escapeHtml(m.title)}</div><div class="filemeta">${escapeHtml(m.fileName)}</div></td><td>${escapeHtml(classMap[m.classId]||'未知班级')}</td><td>${m.isMd?'<span class="badge">Markdown</span>':escapeHtml(m.type||'未知类型')}<div class="filemeta">${formatBytes(m.size)} · ${escapeHtml(fileExt(m.fileName))}</div></td><td>${escapeHtml(m.time)}</td><td><span class="link" onclick="showMaterialDetail('${m.id}')">详情</span>${m.isMd?` · <span class="link" onclick="previewMaterial('${m.id}')">预览</span>`:''} · <span class="link" onclick="downloadMaterial('${m.id}')">下载</span> · <span class="link" onclick="removeMaterial('${m.id}')">删除</span></td></tr>`;
+ });
+ h+='</tbody></table></div>';
+ document.getElementById('materialTableArea').innerHTML=h;
+}
+
+function fileExt(name){
+ const p=String(name).split('.');
+ return p.length>1?'.'+p.pop().toLowerCase():'无扩展名';
+}
+
+let currentMaterialId=null;
+
+async function showMaterialDetail(id){
+ try{
+   const m=await getMaterial(id);if(!m)return;
+   currentMaterialId=id;
+   hideAll();
+   document.getElementById('materialDetailView').classList.remove('hidden');
+   const c=classes().find(x=>x.id===m.classId);
+   document.getElementById('detailMaterialTitle').textContent=m.title;
+   document.getElementById('detailMaterialMeta').textContent=(c?c.name:'未知班级')+' · '+m.fileName;
+   document.getElementById('renameMaterialInput').value=m.title;
+   document.getElementById('materialDetailInfo').innerHTML=
+     `<div><strong>所属班级</strong><br>${escapeHtml(c?c.name:'未知班级')}</div>`+
+     `<div><strong>原文件名</strong><br>${escapeHtml(m.fileName)}</div>`+
+     `<div><strong>文件类型</strong><br>${escapeHtml(m.isMd?'Markdown':(m.type||'未知'))}</div>`+
+     `<div><strong>文件大小</strong><br>${formatBytes(m.size)}</div>`+
+     `<div><strong>上传时间</strong><br>${escapeHtml(m.time)}</div>`+
+     `<div><strong>扩展名</strong><br>${escapeHtml(fileExt(m.fileName))}</div>`;
+ }catch(e){
+   if(e.message!=='unauthorized')notice(e.message||'读取材料详情失败。',false);
+ }
+}
+
+async function renameCurrentMaterial(){
+ if(!currentMaterialId)return;
+ const n=document.getElementById('renameMaterialInput').value.trim();
+ if(!n){notice('材料标题不能为空。',false);return}
+ try{
+   await materialApi('/materials/'+encodeURIComponent(currentMaterialId),{
+     method:'PUT',
+     headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({title:n})
+   });
+   await showMaterialDetail(currentMaterialId);
+   notice('材料标题已更新。');
+ }catch(e){
+   if(e.message!=='unauthorized')notice(e.message||'材料重命名失败。',false);
+ }
+}
+
+async function replaceCurrentMaterial(){
+ if(!currentMaterialId)return;
+ const f=document.getElementById('replaceMaterialFile').files[0];
+ if(!f){notice('请先选择用于替换的文件。',false);return}
+ try{
+   const dataBase64=await fileToBase64(f);
+   await materialApi('/materials/'+encodeURIComponent(currentMaterialId),{
+     method:'PUT',
+     headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({
+       replaceFile:true,
+       fileName:f.name,
+       type:f.type||'',
+       dataBase64
+     })
+   });
+   document.getElementById('replaceMaterialFile').value='';
+   await showMaterialDetail(currentMaterialId);
+   notice('原文件已替换。');
+ }catch(e){
+   if(e.message!=='unauthorized')notice(e.message||'替换文件失败。',false);
+ }
+}
+
+async function downloadCurrentMaterial(){
+ if(currentMaterialId)await downloadMaterial(currentMaterialId);
+}
+
+async function deleteCurrentMaterial(){
+ if(!currentMaterialId)return;
+ try{
+   const m=await getMaterial(currentMaterialId);if(!m)return;
+   if(!confirm('确认删除材料“'+m.title+'”？'))return;
+   await deleteMaterial(currentMaterialId);
+   currentMaterialId=null;
+   await showMaterials();
+   notice('材料已删除。');
+ }catch(e){
+   if(e.message!=='unauthorized')notice(e.message||'删除材料失败。',false);
+ }
+}
+
+async function previewMaterial(id){
+ try{
+   const m=await getMaterial(id);
+   if(!m||!m.isMd)return;
+   hideAll();
+   document.getElementById('materialPreviewView').classList.remove('hidden');
+   const c=classes().find(x=>x.id===m.classId);
+   document.getElementById('materialPreviewTitle').textContent=m.title;
+   document.getElementById('materialPreviewMeta').textContent=(c?c.name:'')+' · '+m.fileName+' · '+m.time;
+   document.getElementById('materialRaw').textContent=m.text||'';
+   document.getElementById('materialRendered').innerHTML=md(m.text||'');
+   document.getElementById('materialDownloadBtn').onclick=()=>downloadMaterial(id);
+ }catch(e){
+   if(e.message!=='unauthorized')notice(e.message||'预览材料失败。',false);
+ }
+}
+
+async function downloadMaterial(id){
+ try{
+   const meta=await getMaterial(id);
+   if(!meta)return;
+   const resp=await fetch('/materials/'+encodeURIComponent(id)+'/download',{credentials:'same-origin'});
+   if(resp.status===401){
+     setTeacherSession(false);showLogin();notice('登录状态已失效，请重新登录教师账号。',false);return;
+   }
+   if(!resp.ok)throw new Error('下载失败：HTTP '+resp.status);
+   const blob=await resp.blob();
+   downloadBlob(blob,meta.fileName);
+ }catch(e){
+   if(e.message!=='unauthorized')notice(e.message||'下载材料失败。',false);
+ }
+}
+
+async function removeMaterial(id){
+ try{
+   const m=await getMaterial(id);if(!m)return;
+   if(!confirm('删除材料“'+m.title+'”？'))return;
+   await deleteMaterial(id);
+   await refreshMaterialTable();
+   notice('材料已删除。');
+ }catch(e){
+   if(e.message!=='unauthorized')notice(e.message||'删除材料失败。',false);
+ }
+}
+
+function downloadBlob(blob,name){
+ const url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download=name;a.style.display='none';
+ document.body.appendChild(a);a.click();document.body.removeChild(a);
+ setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+
+function isToday(t){
+ if(!t)return false;try{const d=new Date(t.replace(/-/g,'/'));const n=new Date();return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate()}catch(e){return false}
+}
+function formatBytes(n){if(!n)return '0 B';const u=['B','KB','MB','GB'];let i=0,v=n;while(v>=1024&&i<u.length-1){v/=1024;i++}return (i?v.toFixed(1):v)+ ' '+u[i]}
+
+function md(src){
+ let s=escapeHtml(src);
+ s=s.replace(/```([\s\S]*?)```/g,'<pre><code>$1</code></pre>');
+ s=s.replace(/^### (.*)$/gm,'<h3>$1</h3>').replace(/^## (.*)$/gm,'<h2>$1</h2>').replace(/^# (.*)$/gm,'<h1>$1</h1>');
+ s=s.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>');
+ s=s.replace(/^\- (.*)$/gm,'<li>$1</li>').replace(/(<li>.*<\/li>\n?)+/g,m=>'<ul>'+m+'</ul>');
+ s=s.replace(/\n{2,}/g,'</p><p>').replace(/\n/g,'<br>');return '<p>'+s+'</p>';
+}
+
+if(!localStorage.getItem(CLASS_KEY))saveClasses([{id:'default',name:'互联网软件开发技术与实践'}]);
+saveSubs(submissions().map(s=>s.classId?s:{...s,classId:'default'}));
+updateNav();showStudent();
+</script>
+</body>
+</html>
