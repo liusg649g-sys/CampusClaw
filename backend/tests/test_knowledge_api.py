@@ -89,6 +89,7 @@ class KnowledgeApiEndToEndTests(unittest.TestCase):
         _, result_a = self.search("class-a", "苹果算法")
         self.assertEqual(len(result_a["results"]), 1)
         self.assertEqual(result_a["results"][0]["classId"], "class-a")
+        self.assertEqual(result_a["results"][0]["materialId"], upload_a["material"]["id"])
         self.assertEqual(result_a["results"][0]["sourceFile"], "a.md")
         self.assertEqual(result_a["results"][0]["chunkIndex"], 0)
 
@@ -99,6 +100,48 @@ class KnowledgeApiEndToEndTests(unittest.TestCase):
         material_id = upload_b["material"]["id"]
         with self.client.open(self.base_url + "/materials/%s/download" % material_id) as response:
             self.assertEqual(response.read().decode("utf-8"), "量子计算是 B 班专属材料")
+
+    def test_search_syncs_historical_materials_before_querying(self):
+        server.save_materials([
+            {
+                "id": "historical-openspec",
+                "classId": "default",
+                "title": "OpenSpec 历史课件",
+                "fileName": "test-openspec.md",
+                "storedName": "historical-openspec__test-openspec.md",
+                "type": "text/markdown",
+                "size": 64,
+                "time": "2026/09/28 14:54:23",
+                "isMd": True,
+                "text": "OpenSpec 是一种规范驱动的软件开发工具。",
+            },
+            {
+                "id": "historical-java",
+                "classId": "class-2026-software-1",
+                "title": "Java 历史课件",
+                "fileName": "test-java.md",
+                "storedName": "historical-java__test-java.md",
+                "type": "text/markdown",
+                "size": 48,
+                "time": "2026/09/28 14:58:58",
+                "isMd": True,
+                "text": "Java 是一种面向对象的编程语言。",
+            },
+        ])
+        knowledge_base.save_knowledge([])
+
+        _, openspec = self.search("default", "OpenSpec")
+        self.assertEqual(openspec["results"][0]["sourceFile"], "test-openspec.md")
+        self.assertEqual(openspec["results"][0]["materialId"], "historical-openspec")
+        self.assertIsNone(openspec["results"][0]["page"])
+        self.assertEqual(openspec["results"][0]["chunkIndex"], 0)
+
+        _, java = self.search("class-2026-software-1", "Java")
+        self.assertEqual(java["results"][0]["sourceFile"], "test-java.md")
+        _, programming = self.search("class-2026-software-1", "编程")
+        self.assertEqual(programming["results"][0]["sourceFile"], "test-java.md")
+        _, isolated = self.search("default", "Java")
+        self.assertEqual(isolated["results"], [])
 
     def test_existing_material_list_update_replace_and_delete_still_work(self):
         _, uploaded = self.upload("class-a", "original.md", "初始材料内容")
@@ -138,8 +181,14 @@ class FrontendKnowledgeTests(unittest.TestCase):
             "function searchKnowledge()",
             "/knowledge/search?",
             "item.sourceFile",
+            "item.materialId",
             "item.page!=null",
             "item.chunkIndex",
+            "所属班级：",
+            "查看原材料",
+            "async function openKnowledgeMaterial(materialId)",
+            "await previewMaterial(materialId,material)",
+            "await showMaterialDetail(materialId,material)",
             "catch(e)",
         ):
             self.assertIn(marker, html)

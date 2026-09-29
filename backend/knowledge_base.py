@@ -137,6 +137,22 @@ def _cosine(left, right):
     return sum(a * b for a, b in zip(left, right))
 
 
+def _keyword_score(query, text):
+    """为包含匹配提供确定性高权重，并支持多关键词交集匹配。"""
+    normalized_query = str(query or "").casefold().strip()
+    normalized_text = str(text or "").casefold()
+    if not normalized_query:
+        return 0.0
+    if normalized_query in normalized_text:
+        return 10.0
+
+    query_tokens = set(_tokens(normalized_query))
+    if not query_tokens:
+        return 0.0
+    matched_tokens = query_tokens.intersection(_tokens(normalized_text))
+    return 2.0 * len(matched_tokens) / len(query_tokens) if matched_tokens else 0.0
+
+
 def build_material_chunks(material):
     """
     将一份课程材料转换成多个知识片段。
@@ -194,7 +210,8 @@ def search_knowledge(class_id, query, limit=5):
     """
     在指定班级范围内搜索知识内容。
 
-    使用持久化向量的余弦相似度，并在评分前强制按班级过滤。
+    使用关键词包含/分词匹配与向量余弦相似度的混合检索，
+    并在任何打分前强制按班级过滤。
     """
 
     class_id = str(class_id or "").strip()
@@ -204,17 +221,19 @@ def search_knowledge(class_id, query, limit=5):
         return []
 
     query_vector = text_to_vector(query)
-    if not any(query_vector):
-        return []
     results = []
     for chunk in load_knowledge():
         # 必须先过滤再评分，其他班级即使完全匹配也不会进入候选集。
         if str(chunk.get("classId", "")) != class_id:
             continue
+        text = str(chunk.get("text", ""))
+        keyword_score = _keyword_score(query, text)
         vector = chunk.get("vector")
         if not isinstance(vector, list) or len(vector) != VECTOR_DIMENSIONS:
-            vector = text_to_vector(chunk.get("text", ""))
-        score = _cosine(query_vector, vector)
+            vector = text_to_vector(text)
+        vector_score = _cosine(query_vector, vector)
+        # 负向量分数不能抵消关键词命中；向量仅补充召回与同类结果排序。
+        score = keyword_score + max(vector_score, 0.0)
         if score > 0:
             result = {key: value for key, value in chunk.items() if key != "vector"}
             result["score"] = round(score, 6)

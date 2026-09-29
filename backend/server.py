@@ -73,6 +73,11 @@ def save_materials(materials):
     )
 
 
+def sync_knowledge_index():
+    """让持久化知识索引与全部历史及当前材料保持一致。"""
+    return rebuild_knowledge(load_materials())
+
+
 def cleanup_sessions():
     now = time.time()
     expired = [
@@ -331,9 +336,8 @@ class CampusClawAPI(BaseHTTPRequestHandler):
                 "message": "缺少查询内容 q"
             }, 400)
 
-        # 先根据当前材料重新建立知识库
-        materials = load_materials()
-        rebuild_knowledge(materials)
+        # 每次检索前从 materials.json 同步，兼容启用知识库前已有的历史材料。
+        sync_knowledge_index()
 
         # 只在指定班级范围内检索
         results = search_knowledge(
@@ -556,11 +560,13 @@ class CampusClawAPI(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     account = load_account()
+    indexed_chunks = sync_knowledge_index()
     print("=" * 64)
     print("CampusClaw Python 后端")
     print("API：登录 / 修改密码 / 课程材料")
     print(f"监听：http://{HOST}:{PORT}")
     print(f"教师账号：{account['username']}")
+    print(f"知识索引：已同步 {len(indexed_chunks)} 个片段")
     print("初始密码：123456（若已修改，以 teacher_account.json 为准）")
     print("=" * 64)
 

@@ -67,6 +67,7 @@ th{background:#fbf7f8;font-size:13px;color:#54373b}.tablewrap{overflow:auto}.lin
 .knowledge-result{padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:#fcfcfd}
 .knowledge-result p{margin:0;line-height:1.7;white-space:pre-wrap}
 .knowledge-source{margin-top:10px;color:var(--muted);font-size:13px}
+.knowledge-result-actions{display:flex;justify-content:flex-end;margin-top:12px}
 footer{background:#fff;border-top:1px solid var(--line);padding:24px 0;color:#888;font-size:13px}
 
 @media(max-width:860px){.head,.adminhead{align-items:flex-start;flex-direction:column;padding:18px 0}.grid2,.grid3,.dashboard,.preview,.knowledge-search{grid-template-columns:1fr}.hero{padding:28px 24px}.hero h1{font-size:28px}.row{align-items:stretch;flex-direction:column}.row button{width:100%}}
@@ -542,13 +543,27 @@ async function searchKnowledge(){
    const data=await materialApi('/knowledge/search?'+params.toString());
    const results=data.results||[];
    if(!results.length){area.innerHTML=`<div class="empty">${escapeHtml(data.message||'当前班级知识库中没有相关内容。')}</div>`;return}
+   const classMap=Object.fromEntries(classes().map(item=>[item.id,item.name]));
    area.innerHTML=results.map(item=>{
      const location=item.page!=null?'第 '+escapeHtml(item.page)+' 页':'片段 '+(Number(item.chunkIndex)+1);
-     return `<article class="knowledge-result"><p>${escapeHtml(item.text||'')}</p><div class="knowledge-source">来源：${escapeHtml(item.sourceFile||'未知材料')} · ${location}</div></article>`;
+     const className=classMap[item.classId]||classMap[classId]||'未知班级';
+     const materialId=encodeURIComponent(String(item.materialId||''));
+     return `<article class="knowledge-result"><p>${escapeHtml(item.text||'')}</p><div class="knowledge-source"><div>来源文件：${escapeHtml(item.sourceFile||'未知材料')}</div><div>所属班级：${escapeHtml(className)}</div><div>位置：${location}</div></div><div class="knowledge-result-actions"><button class="secondary" onclick="openKnowledgeMaterial(decodeURIComponent('${materialId}'))">查看原材料</button></div></article>`;
    }).join('');
  }catch(e){
    if(e.message!=='unauthorized')area.innerHTML=`<div class="alert err">${escapeHtml(e.message||'知识库检索失败，请稍后重试。')}</div>`;
  }finally{button.disabled=false}
+}
+
+async function openKnowledgeMaterial(materialId){
+ if(!materialId){notice('该检索结果缺少原材料标识。',false);return}
+ try{
+   const material=await getMaterial(materialId);if(!material)return;
+   if(material.isMd)await previewMaterial(materialId,material);
+   else await showMaterialDetail(materialId,material);
+ }catch(e){
+   if(e.message!=='unauthorized')notice(e.message||'无法打开原材料。',false);
+ }
 }
 function renameClass(id){
  const arr=classes(),c=arr.find(x=>x.id===id);if(!c)return;
@@ -689,9 +704,9 @@ function fileExt(name){
 
 let currentMaterialId=null;
 
-async function showMaterialDetail(id){
+async function showMaterialDetail(id,material=null){
  try{
-   const m=await getMaterial(id);if(!m)return;
+   const m=material||await getMaterial(id);if(!m)return;
    currentMaterialId=id;
    hideAll();
    document.getElementById('materialDetailView').classList.remove('hidden');
@@ -770,9 +785,9 @@ async function deleteCurrentMaterial(){
  }
 }
 
-async function previewMaterial(id){
+async function previewMaterial(id,material=null){
  try{
-   const m=await getMaterial(id);
+   const m=material||await getMaterial(id);
    if(!m||!m.isMd)return;
    hideAll();
    document.getElementById('materialPreviewView').classList.remove('hidden');

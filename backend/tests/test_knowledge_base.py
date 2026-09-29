@@ -63,6 +63,35 @@ class KnowledgeBaseTests(unittest.TestCase):
         self.assertEqual([item["classId"] for item in found], ["class-b"])
         self.assertEqual(found[0]["chunkIndex"], 0)
 
+    def test_exact_terms_match_historical_materials_with_class_isolation(self):
+        knowledge_base.rebuild_knowledge([
+            {
+                "id": "openspec-material",
+                "classId": "default",
+                "fileName": "test-openspec.md",
+                "text": "OpenSpec 是一种规范驱动的软件开发工具。",
+            },
+            {
+                "id": "java-material",
+                "classId": "class-2026-software-1",
+                "fileName": "test-java.md",
+                "text": "Java 是一种面向对象的编程语言。",
+            },
+        ])
+
+        openspec = knowledge_base.search_knowledge("default", "OpenSpec")
+        self.assertEqual(openspec[0]["sourceFile"], "test-openspec.md")
+        self.assertGreaterEqual(openspec[0]["score"], 10.0)
+        self.assertEqual(openspec[0]["materialId"], "openspec-material")
+        self.assertIsNone(openspec[0]["page"])
+        self.assertEqual(openspec[0]["chunkIndex"], 0)
+
+        java = knowledge_base.search_knowledge("class-2026-software-1", "Java")
+        self.assertEqual(java[0]["sourceFile"], "test-java.md")
+        programming = knowledge_base.search_knowledge("class-2026-software-1", "编程")
+        self.assertEqual(programming[0]["sourceFile"], "test-java.md")
+        self.assertEqual(knowledge_base.search_knowledge("default", "Java"), [])
+
 
 if __name__ == "__main__":
     unittest.main()
