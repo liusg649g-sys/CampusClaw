@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "files_scanned": 131,
+  "findings_count": 0,
+  "methods": [
+    "explicit public path allowlist",
+    "text credential-pattern scan",
+    "Python literal password review",
+    "PDF text extraction scan",
+    "manual review of synthetic provenance and screenshots"
+  ],
+  "scope": "public snapshot only; real secrets and private data not read",
+  "history": "parentless sanitized delivery snapshot; original main history not rewritten"
+}

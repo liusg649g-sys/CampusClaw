@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-27",
+  "full_api_and_unit_suite": {
+    "total": 187,
+    "passed": 185,
+    "failed": 0,
+    "errors": 0,
+    "skipped_real_model": 2
+  },
+  "five_question_evidence_tests": {
+    "passed": 5,
+    "included_in_full_suite": true
+  },
+  "standalone_mcp": {
+    "total": 47,
+    "passed": 47,
+    "failed": 0,
+    "skipped": 0
+  },
+  "browser_functional_checks": {
+    "teacher_and_swagger": 17,
+    "student_tool_loop": 11,
+    "total_passed": 28
+  },
+  "model": "Mock HTTP transport only; real model requests: 0",
+  "mcp": "real isolated local server for success paths",
+  "docker": "not built or started; runtime acceptance remains unverified",
+  "data": "synthetic fixtures only"
+}

@@ -1,0 +1,8 @@
+FROM python:3.12-slim
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+WORKDIR /app
+RUN useradd --uid 10001 --create-home campusclaw
+COPY mcp-server/server.py mcp-server/tools.py /app/mcp-server/
+COPY deploy/container_entry.py /app/deploy/
+USER campusclaw
+CMD ["python", "/app/deploy/container_entry.py", "mcp"]

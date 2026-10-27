@@ -1,0 +1,51 @@
+{
+  "checked_on": "2026-10-27",
+  "method": "Python standard-library read-only HTTP; generic web tool was unavailable",
+  "personal_stage_questions": "The five questions explicitly supplied by the user; original assignment screenshot not provided",
+  "sources": [
+    {
+      "name": "home",
+      "url": "https://devops.hello1023.com/index.html",
+      "http_status": 200,
+      "saved_content_sha256": "d4fb817ecd7bace41c99ee18cc9bc7d6bd7e2153ba6cea0a82ab283b53a6220b",
+      "saved_content_kind": "html",
+      "paraphrased_requirements": [
+        "课程包含提示词、知识库、技能与MCP，并强调规约与部署。"
+      ]
+    },
+    {
+      "name": "project",
+      "url": "https://devops.hello1023.com/项目介绍.html",
+      "http_status": 200,
+      "saved_content_sha256": "2ad59c329375d55362dd3cc46fdce9ea38f7a0371c9a6a15d922c3fe6badf54d",
+      "saved_content_kind": "visible text",
+      "paraphrased_requirements": [
+        "学期项目的公网部署、作业批改、错题流程属于更广范围，未宣称本轮全部完成。"
+      ]
+    },
+    {
+      "name": "lesson5",
+      "url": "https://devops.hello1023.com/课程任务清单-第5课.html",
+      "http_status": 200,
+      "saved_content_sha256": "17c412f8e41425daa8fb4603e00cb18476178987640f65fea4037a708c7c12b2",
+      "saved_content_kind": "visible text",
+      "paraphrased_requirements": [
+        "教师提示词及解题引导技能、学生流式会话、本班知识库引用。",
+        "Bearer认证、Swagger及按接口组织的apitest；原始HTML测试报告不随作业提交。"
+      ]
+    },
+    {
+      "name": "lesson6",
+      "url": "https://devops.hello1023.com/课程任务清单-第6课.html",
+      "http_status": 200,
+      "saved_content_sha256": "4d9ef510a7d31137dcb8e88cef89132280bd096192e53ef73a24a27ce53c2c7b",
+      "saved_content_kind": "visible text",
+      "paraphrased_requirements": [
+        "同仓MCP服务、JSON-RPC初始化/发现/调用、至少两个工具及私有认证。",
+        "教师登记连接发现、技能引用、模型决策与宿主执行、结果回传、轮次上限、SSE状态及审计。",
+        "容器联调与真人同伴复核仍需实际完成，自动化不替代真人验证。"
+      ]
+    }
+  ],
+  "completion_boundary": "Mock LLM + real isolated local MCP; no real model, container runtime or human peer acceptance claimed"
+}

@@ -1,0 +1,70 @@
+# Python caches
+**/__pycache__/
+*.pyc
+
+# Local accounts, runtime data, and uploaded materials
+backend/teacher_account.json
+backend/materials.json
+backend/knowledge_chunks.json
+backend/material_files/*
+!backend/material_files/.keep
+
+# Runtime logs and temporary files
+logs/*
+!logs/.keep
+temp/*
+!temp/.keep
+
+# Editors and operating-system metadata
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# Local secrets
+.env
+.env.*
+!.env.example
+backend/assistant.sqlite3*
+apitest/reports/
+deploy/.local/
+deploy/.local-backups/
+
+# Local credentials, databases and runtime exports (never publish)
+**/TEST_ACCOUNTS.json
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
+*.log
+*.pid
+*.pem
+*.key
+*.har
+*.trace
+**/browser-fixture.json
+**/*-browser-fixture.json
+**/browser-model-inputs.json
+**/stage2-model-inputs.json
+**/.runtime/
+**/.run/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.agents/
+.codex/
+tmp/
+*.png
+*.jpg
+*.jpeg
+!submission/evidence/*.png
+
+# Historical local-only delivery/diagnostic records; publish curated docs instead
+/LESSON*_DELIVERY.md
+/LESSON5_6_*.md
+/LESSON6_STAGE4_DOCKER_VALIDATION.md
+/COURSE_LESSON5_6_ACCEPTANCE.md
+/SITE_ACCESS_*.md
+/REAL_MODEL_ACCEPTANCE.md

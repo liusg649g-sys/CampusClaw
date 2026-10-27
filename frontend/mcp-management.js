@@ -1,0 +1,24 @@
+'use strict';
+(() => {
+ const get=id=>document.getElementById(id),cid=()=>get('classSelect').value;
+ let selected=null,servers=[],generation=0;
+ function feedback(text,failed=false){get('mcpFeedback').textContent=text;get('mcpFeedback').style.color=failed?'#8e2635':'#20633a';}
+ function edit(id){get('mcpAuditRows').replaceChildren();get('mcpAuditSummary').textContent='';selected=id;const item=servers.find(s=>s.id===id);get('mcpList').value=item?String(id):'';get('mcpKey').value=item?.server_key||'';get('mcpKey').disabled=!!item;get('mcpName').value=item?.name||'';get('mcpUrl').value=item?.base_url||'http://127.0.0.1:8090';get('mcpToken').value='';get('mcpTools').replaceChildren();get('mcpState').textContent=item?'状态：'+item.status+'；令牌：'+(item.auth_token_set?'已配置':'未配置')+'；最近发现：'+(item.last_discovered_at||'无')+(item.error_summary?'；错误：'+item.error_summary:''):'';}
+ async function tools(){if(!selected)return;const id=selected;const data=await api('/api/mcp/servers/'+id+'/tools');if(selected!==id)return;get('mcpTools').replaceChildren(...data.tools.map(t=>{const box=document.createElement('div'),title=document.createElement('h4'),description=document.createElement('p'),schema=document.createElement('pre');title.textContent=t.reference+(t.available?'（可用）':'（不可用）');description.textContent=t.description;schema.textContent=JSON.stringify(t.inputSchema,null,2);schema.style.whiteSpace='pre-wrap';box.append(title,description,schema);return box;}));if(!data.tools.length)get('mcpTools').textContent='暂无可用工具，请连接并发现。';}
+ async function load(keep=true){const stamp=++generation,classId=cid();get('mcpManagement').classList.toggle('hidden',user?.role!=='教师');if(user?.role!=='教师'){edit(null);return;}if(!classId){servers=[];get('mcpList').replaceChildren();edit(null);feedback('请先准备服务端班级。');return;}const data=await api('/api/mcp/servers?classId='+encodeURIComponent(classId));if(stamp!==generation||cid()!==classId||user?.role!=='教师')return;servers=data.servers;get('mcpList').replaceChildren(...servers.map(s=>new Option(s.name+' · '+s.status,s.id)));edit(keep&&servers.some(s=>s.id===selected)?selected:null);await tools();}
+ function need(){if(!cid())throw Error('请先准备服务端班级');if(!selected)throw Error('请先选择服务器');return selected;}
+ function action(id,fn){get(id).onclick=async()=>{get(id).disabled=true;feedback('');try{await fn();}catch(e){feedback(e.message,true);}finally{get(id).disabled=false;}};}
+ get('mcpList').onchange=async()=>{edit(Number(get('mcpList').value));try{await tools();}catch(e){feedback(e.message,true);}};
+ get('mcpNew').onclick=()=>{edit(null);feedback('填写稳定标识、地址和专用令牌后保存。');};
+ action('mcpSave',async()=>{if(!cid())throw Error('请先准备服务端班级');const input={classId:cid(),name:get('mcpName').value,server_key:get('mcpKey').value,base_url:get('mcpUrl').value};const credential=get('mcpToken').value;if(credential)input.auth_token=credential;try{const result=await api('/api/mcp/servers'+(selected?'/'+selected:''),selected?'PUT':'POST',input);selected=result.id;await load();feedback('服务器登记已保存；修改后需重新连接。');}finally{get('mcpToken').value='';}});
+ action('mcpConnect',async()=>{const id=need();feedback('正在握手并发现工具……');try{await api('/api/mcp/servers/'+id+'/connect','POST',{});await load();feedback('连接与工具发现成功。');}catch(e){await load();throw e;}});
+ action('mcpDisconnect',async()=>{await api('/api/mcp/servers/'+need()+'/disconnect','POST',{});await load();feedback('已断开；缓存已清除，技能引用不再可用。');});
+ action('mcpDelete',async()=>{const id=need();if(!confirm('删除该服务器及工具缓存？历史技能原文保留，但引用会失效。'))return;await api('/api/mcp/servers/'+id,'DELETE');selected=null;await load();feedback('服务器已删除。');});
+ action('mcpRefresh',async()=>{await load();feedback('MCP管理数据已刷新。');});
+ action('mcpAuditRefresh',async()=>{if(!cid())throw Error('请先选择班级');const classId=cid();const query=new URLSearchParams({classId,page:get('mcpAuditPage').value,pageSize:'20'});if(get('mcpAuditStatus').value)query.set('status',get('mcpAuditStatus').value);const result=await api('/api/mcp/tool-calls?'+query);if(cid()!==classId||user?.role!=='教师')return;get('mcpAuditSummary').textContent='共 '+result.total+' 条，第 '+result.page+' 页';get('mcpAuditRows').replaceChildren(...result.calls.map(call=>{const row=document.createElement('p');row.textContent=call.started_at+' · '+call.user_id+' · '+call.tool_ref+' · '+call.status+' · '+call.duration_ms+'ms'+(call.error_summary?' · '+call.error_summary:'');return row;}));});
+ const prior=window.refreshTeachingManagement;
+ // A running old backend/proxy may not have loaded the new routes yet.
+ // Failure of optional MCP management must not block the existing workspace.
+ window.refreshTeachingManagement=async()=>{await prior?.();try{await load(false);}catch(e){feedback(e instanceof SyntaxError?'MCP管理接口尚未启用，请完成服务更新后再试。':'MCP管理暂不可用：'+e.message,true);}};
+ if(user)load(false).catch(e=>feedback(e.message,true));
+})();

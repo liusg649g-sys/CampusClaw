@@ -1,0 +1,15 @@
+**
+!backend/
+!backend/*.py
+!frontend/
+!frontend/*.html
+!frontend/*.js
+!mcp-server/
+!mcp-server/server.py
+!mcp-server/tools.py
+!deploy/
+!deploy/*.py
+!deploy/*.conf
+!deploy/Dockerfile*
+!requirements-deploy.txt
+# Whitelist above excludes .env, Git, databases, JSON, uploads, reports and secrets.

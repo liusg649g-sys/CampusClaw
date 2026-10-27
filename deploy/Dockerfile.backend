@@ -1,0 +1,11 @@
+FROM python:3.12-slim
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+WORKDIR /app
+COPY requirements-deploy.txt /app/
+RUN pip install --no-cache-dir --only-binary=:all: -r requirements-deploy.txt \
+    && useradd --uid 10001 --create-home campusclaw \
+    && mkdir /data && chown campusclaw:campusclaw /data
+COPY backend/*.py /app/backend/
+COPY deploy/container_entry.py deploy/backup_data.py deploy/rotate_mcp_key.py /app/deploy/
+USER campusclaw
+CMD ["python", "/app/deploy/container_entry.py", "backend"]

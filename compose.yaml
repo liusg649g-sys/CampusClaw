@@ -1,0 +1,76 @@
+name: ${CAMPUSCLAW_COMPOSE_PROJECT_NAME:-campusclaw}
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.backend
+    environment:
+      CAMPUSCLAW_CONTAINER_MODE: "1"
+      CAMPUSCLAW_DATA_DIR: /data
+      CAMPUSCLAW_SECRET_BACKEND: aesgcm
+      CAMPUSCLAW_MCP_ALLOWED_URLS: http://mcp:8090
+      CHAT_BASE_URL: ${CHAT_BASE_URL:-}
+      CHAT_MODEL: ${CHAT_MODEL:-course-chat}
+      EMBEDDING_BASE_URL: ${EMBEDDING_BASE_URL:-}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-course-embedding}
+      EMBEDDING_DIM: ${EMBEDDING_DIM:-2048}
+    secrets: [token_secret, mcp_encryption_key, teacher_password, chat_api_key, embedding_api_key]
+    volumes: [business_data:/data]
+    networks: [campus]
+    depends_on:
+      mcp: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/health', timeout=3)"]
+      interval: 10s
+      timeout: 4s
+      retries: 6
+      start_period: 20s
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+  mcp:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.mcp
+    environment:
+      CAMPUSCLAW_CONTAINER_MODE: "1"
+    secrets: [mcp_auth_token]
+    networks: [campus]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/health', timeout=3)"]
+      interval: 10s
+      timeout: 4s
+      retries: 6
+      start_period: 5s
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+  nginx:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.nginx
+    ports: ["127.0.0.1:${CAMPUSCLAW_HTTP_PORT:-8080}:8080"]
+    networks: [campus]
+    depends_on:
+      backend: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, http://127.0.0.1:8080/health]
+      interval: 10s
+      timeout: 4s
+      retries: 6
+    restart: unless-stopped
+networks:
+  campus:
+volumes:
+  business_data:
+secrets:
+  token_secret: {file: "${CAMPUSCLAW_COMPOSE_SECRETS_DIR:?Set isolated secrets directory}/token_secret"}
+  mcp_auth_token: {file: "${CAMPUSCLAW_COMPOSE_SECRETS_DIR:?Set isolated secrets directory}/mcp_auth_token"}
+  mcp_encryption_key: {file: "${CAMPUSCLAW_COMPOSE_SECRETS_DIR:?Set isolated secrets directory}/mcp_encryption_key"}
+  teacher_password: {file: "${CAMPUSCLAW_COMPOSE_SECRETS_DIR:?Set isolated secrets directory}/teacher_password"}
+  chat_api_key: {file: "${CAMPUSCLAW_COMPOSE_SECRETS_DIR:?Set isolated secrets directory}/chat_api_key"}
+  embedding_api_key: {file: "${CAMPUSCLAW_COMPOSE_SECRETS_DIR:?Set isolated secrets directory}/embedding_api_key"}

@@ -1,0 +1,6 @@
+# Optional report export dependencies. Install inside a virtual environment or
+# with --target temp/submission-deps; application runtime does not require them.
+reportlab==5.1.0
+Markdown==3.11.2
+pypdf==6.21.3
+Pillow==13.0.0
