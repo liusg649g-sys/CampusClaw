@@ -28,9 +28,8 @@ CampusClaw_materials_session/
    Cookie: campusclaw_session=xxxxxxxx
 7. 材料上传、查询、详情、重命名、替换、下载、删除均通过后端 API 完成。
 
-教师初始账号：
-teacher
-123456
+教师初始用户名：teacher
+不提供固定初始口令。首次启动使用本地环境变量 CAMPUSCLAW_INITIAL_TEACHER_PASSWORD；未设置时随机生成，仅保存到本机私有 backend/teacher_account.json。已有账号文件不会覆盖，密码不写日志。
 
 启动方法：
 
@@ -49,7 +48,7 @@ D:\CampusClaw\CampusClaw_materials_session
 http://127.0.0.1:8080
 
 检查 Cookie：
-先登录 teacher / 123456
+使用本机私有教师账号及个人设置的口令登录；不要截取或公开登录请求、Cookie。
 → F12
 → Network
 → Fetch/XHR

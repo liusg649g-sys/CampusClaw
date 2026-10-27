@@ -1,6 +1,7 @@
 import base64
 import http.cookiejar
 import json
+import secrets
 import sys
 import tempfile
 import threading
@@ -25,7 +26,10 @@ class KnowledgeApiEndToEndTests(unittest.TestCase):
     def setUpClass(cls):
         cls.temp_dir = tempfile.TemporaryDirectory()
         root = Path(cls.temp_dir.name)
+        cls.teacher_password = secrets.token_urlsafe(24)
+        (root / "teacher_account.json").write_text(json.dumps({"username": "teacher", "password": cls.teacher_password, "name": "隔离测试教师", "role": "教师"}), encoding="utf-8")
         cls.patches = [
+            patch.object(server, "ACCOUNT_FILE", root / "teacher_account.json"),
             patch.object(server, "MATERIALS_FILE", root / "materials.json"),
             patch.object(server, "MATERIAL_FILES_DIR", root / "files"),
             patch.object(knowledge_base, "KNOWLEDGE_FILE", root / "knowledge.json"),
@@ -54,7 +58,7 @@ class KnowledgeApiEndToEndTests(unittest.TestCase):
         knowledge_base.save_knowledge([])
         jar = http.cookiejar.CookieJar()
         self.client = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
-        self.request_json("/login", "POST", {"username": "teacher", "password": "123456"})
+        self.request_json("/login", "POST", {"username": "teacher", "password": self.teacher_password})
 
     def request_json(self, path, method="GET", body=None):
         data = None if body is None else json.dumps(body).encode("utf-8")

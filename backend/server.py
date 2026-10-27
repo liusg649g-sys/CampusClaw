@@ -6,6 +6,7 @@ from datetime import datetime
 import base64
 import json
 import mimetypes
+import os
 import re
 import secrets
 import time
@@ -23,7 +24,7 @@ MATERIAL_FILES_DIR.mkdir(exist_ok=True)
 
 DEFAULT_ACCOUNT = {
     "username": "teacher",
-    "password": "123456",
+    "password": os.environ.get("CAMPUSCLAW_INITIAL_TEACHER_PASSWORD") or secrets.token_urlsafe(24),
     "name": "任课教师",
     "role": "教师"
 }
@@ -567,7 +568,7 @@ if __name__ == "__main__":
     print(f"监听：http://{HOST}:{PORT}")
     print(f"教师账号：{account['username']}")
     print(f"知识索引：已同步 {len(indexed_chunks)} 个片段")
-    print("初始密码：123456（若已修改，以 teacher_account.json 为准）")
+    print("教师口令仅保存在本机私有账号文件；不会写入启动日志。")
     print("=" * 64)
 
     httpd = ThreadingHTTPServer((HOST, PORT), CampusClawAPI)
